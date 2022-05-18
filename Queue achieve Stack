@@ -1,0 +1,196 @@
+//Leetcode:225
+typedef int QDataType;
+typedef struct QueueNode
+{
+	struct QueueNode* next;
+	QDataType data;
+}QNode;
+
+typedef struct Queue
+{
+	//int size;
+	QNode* head;
+	QNode* tail;
+}Queue;
+
+void QueueInit(Queue* pq);
+void QueueDestroy(Queue* pq);
+void QueuePush(Queue* pq, QDataType x);
+void QueuePop(Queue* pq);
+QDataType QueueFront(Queue* pq);
+QDataType QueueBack(Queue* pq);
+bool QueueEmpty(Queue* pq);
+int QueueSize(Queue* pq);
+
+void QueueInit(Queue* pq)
+{
+	assert(pq);
+	pq->head = pq->tail = NULL;
+}
+
+void QueueDestroy(Queue* pq)
+{
+	assert(pq);
+	QNode* cur = pq->head;
+	while (cur)
+	{
+		QNode* next = cur->next;
+		free(cur);
+	}
+
+	pq->head = pq->tail = NULL;
+}
+
+void QueuePush(Queue* pq, QDataType x)
+{
+	assert(pq);
+	QNode* newnode = (QNode*)malloc(sizeof(QNode));
+	if (newnode == NULL)
+	{
+		printf("malloc fail\n");
+		exit(-1);
+	}
+	newnode->data = x;
+	newnode->next = NULL;
+
+	if (pq->tail == NULL)
+	{
+		pq->head = pq->tail = newnode;
+	}
+	else
+	{
+		pq->tail->next = newnode;
+		pq->tail = newnode;
+	}
+}
+
+void QueuePop(Queue* pq)
+{
+	assert(pq);
+	assert(!QueueEmpty(pq));
+
+	// 1
+	// 2ڵ
+	if (pq->head->next == NULL)
+	{
+		free(pq->head);
+		pq->head = pq->tail = NULL;
+	}
+	else
+	{
+		QNode* next = pq->head->next;
+		free(pq->head);
+		pq->head = next;
+	}
+}
+
+QDataType QueueFront(Queue* pq)
+{
+	assert(pq);
+	assert(!QueueEmpty(pq));
+
+	return pq->head->data;
+}
+
+QDataType QueueBack(Queue* pq)
+{
+	assert(pq);
+	assert(!QueueEmpty(pq));
+
+	return pq->tail->data;
+}
+
+bool QueueEmpty(Queue* pq)
+{
+	assert(pq);
+	return pq->head == NULL;
+}
+
+int QueueSize(Queue* pq)
+{
+	assert(pq);
+	QNode* cur = pq->head;
+	int size = 0;
+	while (cur)
+	{
+		++size;
+		cur = cur->next;
+	}
+
+	return size;
+}
+typedef struct {
+    Queue q1;
+    Queue q2;
+} MyStack;
+
+//START
+MyStack* myStackCreate() {
+    MyStack* obj = (MyStack*)malloc(sizeof(MyStack));
+    QueueInit(&obj->q1);
+    QueueInit(&obj->q2);
+    return obj;
+}
+
+void myStackPush(MyStack* obj, int x) {
+    if(!QueueEmpty(&obj->q1))
+    {
+        QueuePush(&obj->q1,x);
+    }
+    else
+    {
+        QueuePush(&obj->q2,x);
+    }
+}
+
+int myStackPop(MyStack* obj) {
+    Queue* EmptyQ = &obj->q1;
+    Queue* nonEmpty = &obj->q2;
+    if(!QueueEmpty(&obj->q1))
+    {
+        EmptyQ = &obj->q2;
+        nonEmpty = &obj->q1;
+    }
+    while(QueueSize(nonEmpty) > 1)
+    {
+        QueuePush(EmptyQ,QueueFront(nonEmpty));
+        QueuePop(nonEmpty);
+    }
+    int top = QueueFront(nonEmpty);
+    QueuePop(nonEmpty);
+    return top;
+}
+
+int myStackTop(MyStack* obj) {
+     Queue* pEmpty = &obj->q1, *pNonEmpty = &obj->q2;
+    if(!QueueEmpty(&obj->q1))
+    {
+        return QueueBack(&obj->q1);
+    }
+    else
+    {
+        return QueueBack(&obj->q2);
+    }
+}
+
+bool myStackEmpty(MyStack* obj) {
+    return QueueEmpty(&obj->q1) && QueueEmpty(&obj->q2);
+}
+
+void myStackFree(MyStack* obj) {
+    free(obj);
+}
+
+/**
+ * Your MyStack struct will be instantiated and called as such:
+ * MyStack* obj = myStackCreate();
+ * myStackPush(obj, x);
+ 
+ * int param_2 = myStackPop(obj);
+ 
+ * int param_3 = myStackTop(obj);
+ 
+ * bool param_4 = myStackEmpty(obj);
+ 
+ * myStackFree(obj);
+*/
