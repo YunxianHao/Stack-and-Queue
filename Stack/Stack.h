@@ -26,3 +26,4 @@ STDataType StackTop(ST* ps);
 bool StackEmpty(ST* ps);
 //the counts
 int StackSize(ST* ps);
+
