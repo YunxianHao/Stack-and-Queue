@@ -73,7 +73,6 @@ int myCircularQueueRear(MyCircularQueue* obj) {
 }
 
 
-
 void myCircularQueueFree(MyCircularQueue* obj) {
     free(obj->a);
     free(obj);
@@ -96,4 +95,3 @@ void myCircularQueueFree(MyCircularQueue* obj) {
  
  * myCircularQueueFree(obj);
 */
-
